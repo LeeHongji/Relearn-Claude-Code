@@ -12,11 +12,18 @@ What happens here:
 
 - runtime macro injection,
 - startup profiling,
-- parallel prefetching for settings and credentials,
+- speculative parallel prefetching for settings and credentials,
 - CLI flag parsing,
-- initialization of commands, plugins, skills, telemetry, and render context.
+- trusted initialization via `entrypoints/init.ts`,
+- deferred warmup after first render.
 
 This is where the product decides **what kind of session is about to exist**.
+
+The subtle but important point is that “boot” is split into phases:
+
+1. **speculative boot** in `main.tsx`,
+2. **safe/trusted initialization** in `entrypoints/init.ts`,
+3. **deferred warmup** once the UI is already visible.
 
 ## Layer 2 — Query and control flow
 
@@ -30,8 +37,14 @@ This is the agent runtime proper. It owns:
 - model selection,
 - message normalization,
 - turn state,
+- conversation-scoped transcript and usage state,
 - retry behavior,
 - transitions between tool use, compaction, and stop conditions.
+
+Another useful mental split:
+
+- `QueryEngine.ts` is the **conversation owner**
+- `query.ts` is the **turn state machine**
 
 ## Layer 3 — Tools, permissions, and integrations
 
