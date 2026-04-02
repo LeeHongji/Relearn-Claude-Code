@@ -83,3 +83,5 @@ That means the codebase teaches more than “how to call an LLM.” It teaches h
 - [Settings Sync and Live Refresh](/claude-code/settings-sync-and-live-refresh)
 - [Tool Search and Deferred Capabilities](/claude-code/tool-search-and-deferred-capabilities)
 - [Session Transcripts and Team Memory](/claude-code/session-transcripts-and-team-memory)
+
+- [Startup Architecture](/claude-code/startup-architecture)

@@ -21,6 +21,7 @@ const enSidebar = [
     text: "Claude Code Deep Dive",
     items: [
       { text: "Architecture", link: "/claude-code/architecture" },
+      { text: "Startup Architecture", link: "/claude-code/startup-architecture" },
       { text: "Repository Map", link: "/claude-code/repo-map" },
       { text: "Runtime Loop", link: "/claude-code/runtime-loop" },
       { text: "Context Engineering", link: "/claude-code/context-engineering" },
@@ -136,6 +137,7 @@ const zhSidebar = [
     text: "Claude Code 源码深潜",
     items: [
       { text: "架构总览", link: "/zh/claude-code/architecture" },
+      { text: "启动架构", link: "/claude-code/startup-architecture" },
       { text: "仓库地图", link: "/zh/claude-code/repo-map" },
       { text: "运行时主循环", link: "/zh/claude-code/runtime-loop" },
       { text: "上下文工程", link: "/zh/claude-code/context-engineering" },
