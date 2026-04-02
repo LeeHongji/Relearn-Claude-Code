@@ -49,6 +49,38 @@ The current `docs/claude-code/*.md` set gives good breadth, but most pages are s
 
 That is acceptable for orientation, but not sufficient for a durable architecture curriculum.
 
+## Survey snapshot: current page inventory
+
+The roadmap priorities are based on a quick inventory of the current Claude Code pages.
+
+| Page | Approx. words | Read on current state |
+| --- | ---: | --- |
+| `tasks-and-orchestration.md` | 125 | too thin to explain runtime/UI orchestration boundaries |
+| `ink-and-terminal-ui.md` | 129 | points at the subsystem but does not yet teach it |
+| `plugins-and-extension-surfaces.md` | 160 | too short for a real extension architecture treatment |
+| `skills-and-prompt-loading.md` | 176 | should become a real skills-system chapter |
+| `mcp-and-external-tools.md` | 250 | decent framing, but still survey-level |
+| `context-engineering.md` | 264 | names the parts, but does not yet walk the full budget/compaction system |
+| `commands-ui-extensions.md` | 266 | overloaded page; commands, UI, and extensions should not stay collapsed together |
+| `memory-and-multi-agent.md` | 268 | overloaded page; memory and multi-agent deserve separate chapters |
+| `runtime-loop.md` | 289 | good orientation, but far too short for the runtime spine |
+| `building-your-own.md` | 297 | good capstone bridge, but should stay secondary to the deeper chapters |
+| `lsp-and-editor-feedback.md` | 315 | the strongest single-focus survey page, worth deepening later |
+| `architecture.md` | 319 | useful overview, but not yet a chapter-level system map |
+| `overflow-recovery-and-reactive-compact.md` | 322 | strong advanced topic, but depends on deeper runtime/context pages |
+| `settings-and-remote-policy.md` | 335 | important control-plane page, still too compressed |
+| `repo-map.md` | 344 | good navigation page; should stay concise |
+| `tools-and-permissions.md` | 354 | important but still too compressed for the tool pipeline + security story |
+| `tool-search-and-deferred-capabilities.md` | 564 | one of the deepest current pages; good model for future advanced subsystem pages |
+| `session-transcripts-and-team-memory.md` | 579 | currently the deepest advanced page besides settings sync |
+| `settings-sync-and-live-refresh.md` | 661 | currently the best-developed control-plane page, but still only one piece of the full control-plane story |
+
+This inventory explains the initial sequence:
+
+- **P0** fixes the reader's core mental model,
+- **P1** deepens the important production subsystems,
+- **P2** splits overloaded survey pages into true专题 articles.
+
 ## Rewrite strategy in one sentence
 
 **Deepen the runtime spine and control plane first, then split broad survey pages into narrower topic articles, then backfill specialized subsystems.**
@@ -98,6 +130,34 @@ After the main rewrites land:
 - re-sequence `learning-path.md`,
 - add links from survey pages to deeper chapters,
 - mirror stable pages into `docs/zh/`.
+
+## Reference chapter mapping
+
+The `how-claude-code-works` repo should be treated as a **chapter-shape reference**, not as a page-by-page template. The mapping below shows which reference chapters set the strongest quality bar for each future article.
+
+| Future article | Best reference chapter(s) for depth/style |
+| --- | --- |
+| Architecture | `01-overview.md` |
+| Startup Architecture | `01-overview.md` sections on startup/data flow |
+| Runtime Spine | `02-agent-loop.md` |
+| Context Engineering | `03-context-engineering.md` |
+| Tool System and Permission Pipeline | `04-tool-system.md` + `10-permission-security.md` |
+| Control Plane | `01-overview.md` startup sections plus current Claude Code settings docs |
+| Tasks and Orchestration | `07-multi-agent.md` for orchestration depth, adapted to task-state surfaces |
+| Commands and Product Surfaces | `11-user-experience.md` |
+| MCP and External Capability Boundaries | `04-tool-system.md` |
+| Hooks, Plugins, and Extension Surfaces | `06-hooks-extensibility.md` + `09-skills-system.md` |
+| User Experience Design | `11-user-experience.md` |
+| Overflow Recovery and Reactive Compact | `02-agent-loop.md` + `03-context-engineering.md` |
+| Tool Search and Deferred Capabilities | `04-tool-system.md` |
+| Session Transcripts / Team Memory | `08-memory-system.md` + `07-multi-agent.md` |
+| Memory System Architecture | `08-memory-system.md` |
+| Multi-Agent Architecture | `07-multi-agent.md` |
+| Skills System and Prompt Loading | `09-skills-system.md` |
+| Code Editing Strategy | `05-code-editing-strategy.md` |
+| Permission and Security Design | `10-permission-security.md` |
+| Minimal Components | `12-minimal-components.md` |
+| Build Your Own | `12-minimal-components.md` + this repo's builder bridge pages |
 
 ## Page-by-page conversion plan
 
