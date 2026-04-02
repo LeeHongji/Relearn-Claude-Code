@@ -7,10 +7,12 @@ This page is a **map of the repo neighborhoods** rather than a line-by-line cata
 | Path | Approx files | What lives there | Why it matters |
 | --- | ---: | --- | --- |
 | `src/main.tsx` | 1 | Boot entrypoint | The operational front door |
+| `src/entrypoints/init.ts` | 1 | Trusted initialization | Safe config, policy, transport, cleanup setup |
 | `src/QueryEngine.ts` | 1 | Session engine | Bridges setup and runtime loop |
 | `src/query.ts` | 1 | Main loop | The core think-act-observe runtime |
 | `src/Tool.ts` | 1 | Tool contracts | Shared execution interface |
 | `src/tools.ts` | 1 | Tool registry | Platform capability surface |
+| `src/tasks.ts` | 1 | Task registry | Long-lived work classes and orchestration surface |
 | `src/commands.ts` | 1 | Command registry | CLI product surface |
 | `src/context.ts` | 1 | Context assembly | Prompt and environment inputs |
 | `src/utils/` | 576 | Helpers, adapters, model/git/config/token logic | Hidden backbone of the system |
@@ -50,10 +52,16 @@ This page is a **map of the repo neighborhoods** rather than a line-by-line cata
 Read:
 
 1. `main.tsx`
-2. `QueryEngine.ts`
-3. `query.ts`
-4. `tools.ts`
-5. `commands.ts`
+2. `entrypoints/init.ts`
+3. `QueryEngine.ts`
+4. `query.ts`
+5. `tools.ts`
+
+Then ask yourself:
+
+- where does startup end?
+- where does session state begin?
+- where does turn control flow live?
 
 ### I care about long-context reliability
 
@@ -83,6 +91,16 @@ Read:
 3. `plugins/`
 4. `services/mcp/`
 5. `tools/AgentTool/*`
+
+### I care about orchestration and visible background work
+
+Read:
+
+1. `tasks.ts`
+2. `utils/tasks.ts`
+3. `tasks/types.ts`
+4. `commands/tasks/*`
+5. `components/tasks/*`
 
 ## Why this atlas exists
 
