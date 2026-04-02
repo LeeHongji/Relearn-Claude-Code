@@ -49,13 +49,25 @@ This repo is a **teaching platform**, not just a notes dump. It is designed for 
 - **Already ship agentic systems?** Start with [Runtime Loop](/claude-code/runtime-loop) and [Tools and Permissions](/claude-code/tools-and-permissions).
 - **Trying to navigate the repo fast?** Open [Repository Map](/claude-code/repo-map) and [Source Atlas](/appendix/source-atlas).
 
+## Fast architecture sequence
+
+If you want the shortest source-grounded path through Claude Code, read in this order:
+
+1. [Source tour: startup to first turn](/source-tours/startup-to-turn)
+2. [Architecture](/claude-code/architecture)
+3. [Runtime Loop](/claude-code/runtime-loop)
+4. [Tools and Permissions](/claude-code/tools-and-permissions)
+5. [Tasks and Orchestration](/claude-code/tasks-and-orchestration)
+6. [Commands, UI, and Extensions](/claude-code/commands-ui-extensions)
+
 ## What makes Claude Code interesting
 
 Claude Code is worth studying because it is not “just prompt engineering.” It is a full product stack with:
 
-- startup orchestration and boot-time prefetching,
-- a streaming think-act-observe loop,
+- speculative startup, trusted init, and boot-time prefetching,
+- a streaming think-act-observe loop with retry/compact/stop control flow,
 - dozens of tools behind a shared interface,
+- task/orchestration layers for long-lived work,
 - explicit permission and shell-safety logic,
 - layered context engineering and memory,
 - slash commands, skills, plugins, MCP, and multi-agent features.

@@ -23,17 +23,21 @@ Read in this order:
 
 Read in this order:
 
-1. [Architecture](/claude-code/architecture)
-2. [Runtime Loop](/claude-code/runtime-loop)
-3. [Context Engineering](/claude-code/context-engineering)
-4. [Tools and Permissions](/claude-code/tools-and-permissions)
-5. [Memory and Multi-Agent](/claude-code/memory-and-multi-agent)
-6. [Build Your Own](/claude-code/building-your-own)
+1. [Source tour: startup to first turn](/source-tours/startup-to-turn)
+2. [Architecture](/claude-code/architecture)
+3. [Runtime Loop](/claude-code/runtime-loop)
+4. [Context Engineering](/claude-code/context-engineering)
+5. [Tools and Permissions](/claude-code/tools-and-permissions)
+6. [Tasks and Orchestration](/claude-code/tasks-and-orchestration)
+7. [Memory and Multi-Agent](/claude-code/memory-and-multi-agent)
+8. [Build Your Own](/claude-code/building-your-own)
 
 ### What to focus on
 
 - Entrypoints and boot-time parallelism.
+- The difference between startup, trusted init, session state, and turn control flow.
 - Tool registry and concurrency control.
+- Why task/orchestration layers become product state rather than hidden infrastructure.
 - Compaction and retry strategies.
 - Extension surfaces: commands, skills, plugins, MCP.
 
@@ -42,14 +46,17 @@ Read in this order:
 Read in this order:
 
 1. [Repository Map](/claude-code/repo-map)
-2. [Runtime Loop](/claude-code/runtime-loop)
-3. [Tools and Permissions](/claude-code/tools-and-permissions)
-4. [Commands, UI, and Extensions](/claude-code/commands-ui-extensions)
-5. [Source Atlas](/appendix/source-atlas)
+2. [Source tour: startup to first turn](/source-tours/startup-to-turn)
+3. [Runtime Loop](/claude-code/runtime-loop)
+4. [Tools and Permissions](/claude-code/tools-and-permissions)
+5. [Tasks and Orchestration](/claude-code/tasks-and-orchestration)
+6. [Commands, UI, and Extensions](/claude-code/commands-ui-extensions)
+7. [Source Atlas](/appendix/source-atlas)
 
 ### What to focus on
 
 - Boundary choices: core loop vs services vs UI vs commands.
+- Time-horizon boundaries: startup vs init vs session vs turn.
 - Feature gates and lazy loading.
 - Failure containment and fallback behavior.
 - Where product complexity lives: permissions, UX, context, platform-specific integration.
