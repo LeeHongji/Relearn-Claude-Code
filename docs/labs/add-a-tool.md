@@ -6,6 +6,13 @@ This lab teaches the difference between “a function the model can call” and 
 
 Add one new tool to a minimal coding-agent project.
 
+```mermaid
+flowchart LR
+  schema[Define schema] --> executor[Implement executor]
+  executor --> safety[Add one safety rule]
+  safety --> compare[Compare with Claude Code]
+```
+
 Good examples:
 
 - `list_recent_files`
@@ -62,3 +69,9 @@ At the end, produce a short note with:
 - tool schema,
 - runtime checks added,
 - one reason the production version needs more infrastructure.
+
+## Continue the lab path
+
+- Overview: [Labs](/labs/)
+- Next: [Compact Context](/labs/compact-context)
+- Deep dive pair: [Tools and Permissions](/claude-code/tools-and-permissions)

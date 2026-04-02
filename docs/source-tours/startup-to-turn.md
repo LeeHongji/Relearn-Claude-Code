@@ -6,6 +6,14 @@ This tour follows the path from process startup to the first meaningful agent tu
 
 `src/main.tsx → entrypoints/init.ts → QueryEngine.ts → query.ts`
 
+```mermaid
+flowchart LR
+  main["src/main.tsx"] --> init["entrypoints/init.ts"]
+  init --> engine["QueryEngine.ts"]
+  engine --> query["query.ts"]
+  query --> turn[First usable turn]
+```
+
 ## 1. `src/main.tsx`
 
 Start here when you want to answer:
@@ -77,3 +85,9 @@ After this tour, you should be able to explain:
 - why prefetching exists,
 - why a session layer exists between CLI and loop,
 - where you would add a new mode or major runtime policy.
+
+## Continue the path
+
+- Overview: [Source tours](/source-tours/)
+- Next: [Tools and Permission Tour](/source-tours/tools-permission-tour)
+- Deep dive pair: [Runtime Loop](/claude-code/runtime-loop)
