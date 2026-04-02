@@ -54,6 +54,18 @@ const enSidebar = [
         link: "/claude-code/lsp-and-editor-feedback",
       },
       {
+        text: "Settings Sync and Live Refresh",
+        link: "/claude-code/settings-sync-and-live-refresh",
+      },
+      {
+        text: "Tool Search and Deferred Capabilities",
+        link: "/claude-code/tool-search-and-deferred-capabilities",
+      },
+      {
+        text: "Session Transcripts and Team Memory",
+        link: "/claude-code/session-transcripts-and-team-memory",
+      },
+      {
         text: "Overflow Recovery and Reactive Compact",
         link: "/claude-code/overflow-recovery-and-reactive-compact",
       },
@@ -149,6 +161,18 @@ const zhSidebar = [
       {
         text: "LSP 与编辑器反馈",
         link: "/zh/claude-code/lsp-and-editor-feedback",
+      },
+      {
+        text: "设置同步与实时刷新",
+        link: "/zh/claude-code/settings-sync-and-live-refresh",
+      },
+      {
+        text: "工具搜索与延迟能力发现",
+        link: "/zh/claude-code/tool-search-and-deferred-capabilities",
+      },
+      {
+        text: "会话转录与团队记忆",
+        link: "/zh/claude-code/session-transcripts-and-team-memory",
       },
       {
         text: "溢出恢复与响应式压缩",

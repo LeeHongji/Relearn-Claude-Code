@@ -1,8 +1,25 @@
 # Session transcripts and team memory
 
-Claude Code contains signals that long-lived work is not only stored as chat history. The source suggests additional durable artifacts such as transcript segments and synchronized team memory.
+Claude Code contains evidence that long-lived agent work is not represented only as “the current chat history.” The source points to several additional durable artifacts:
 
-## Relevant source areas
+- transcript-like session outputs,
+- tool-use summaries,
+- synchronized team memory,
+- secret-guarded shared state.
+
+## Why this subsystem matters
+
+As soon as an agent session becomes:
+
+- long-running,
+- collaborative,
+- or tool-heavy,
+
+plain in-memory messages are no longer enough.
+
+You need ways to persist, compress, summarize, or synchronize what happened.
+
+## Main source anchors
 
 - `src/services/sessionTranscript/sessionTranscript.ts`
 - `src/services/teamMemorySync/index.ts`
@@ -10,39 +27,112 @@ Claude Code contains signals that long-lived work is not only stored as chat his
 - `src/services/teamMemorySync/teamMemSecretGuard.ts`
 - `src/services/toolUseSummary/toolUseSummaryGenerator.ts`
 
-## Why this subsystem matters
+## Architecture sketch
 
-A production agent often needs more than “messages in RAM”:
+```mermaid
+flowchart LR
+  session[active session] --> transcript[session transcript]
+  session --> summary[tool use summary]
+  session --> memory[team memory sync]
+  memory --> guard[secret guard]
+  guard --> remote[shared remote state]
+```
 
-- durable transcript output,
-- summaries of tool-heavy work,
-- shared memory for collaborative or multi-session flows,
-- secret scanning before synchronized memory leaves a local boundary.
+## What is interesting about the transcript path
 
-## What the source teaches
+In this research fork, `sessionTranscript.ts` is exposed only as a stub. That is still useful pedagogically:
 
-### Session transcripts
+- it tells us the product expects a transcript subsystem to exist,
+- and other files call into it from compaction/attachment flows,
+- which implies transcript handling is part of the real runtime design even if the leaked/stubbed fork does not include its full implementation.
 
-`sessionTranscript.ts` suggests the runtime can persist transcript segments or related artifacts as part of the operational story, not just the visible chat thread.
+This is an important teaching lesson:
 
-### Team memory sync
+> even a stub can be architectural evidence if the rest of the codebase depends on it.
 
-The `teamMemorySync/` area is especially interesting because it treats shared memory as a synchronization problem with safety requirements.
+## What `teamMemorySync/watcher.ts` teaches
 
-### Secret guard
+This file is much richer and shows what shared memory really means in a product.
 
-`teamMemSecretGuard.ts` is a strong product lesson: shared memory systems need scanning/guard rails, not only convenient sync logic.
+### Annotated code fragment
 
-### Tool-use summary
+```ts
+const DEBOUNCE_MS = 2000
+let pushInProgress = false
+let hasPendingChanges = false
+```
 
-`toolUseSummaryGenerator.ts` shows another layer of durable abstraction: compressing tool-heavy behavior into more reusable summaries.
+**Annotation**
 
-## Main design lesson
+- Shared memory sync is treated as a file-watching + batching problem.
+- Debounce exists because writing every tiny edit immediately would be noisy and expensive.
+- `pushInProgress` / `hasPendingChanges` tell us the runtime expects overlapping edits and must serialize sync behavior carefully.
 
-For beginners:
+### Another useful fragment
 
-> Durable agent state can live in more than one shape: raw chat, summaries, transcripts, and synced memory.
+```ts
+if (isPermanentFailure(result) && pushSuppressedReason === null) {
+  pushSuppressedReason = ...
+}
+```
 
-For advanced readers:
+**Annotation**
 
-> The real challenge is which artifacts become durable, who can consume them, and how the runtime prevents leaks when memory becomes collaborative.
+- The runtime distinguishes permanent vs transient sync failures.
+- That prevents endless retry loops from shared-dir activity.
+- This is very strong production thinking: collaboration systems need backoff and suppression logic, not only optimistic syncing.
+
+## What `teamMemSecretGuard.ts` implies
+
+The presence of a dedicated secret-guard file tells us something important about the product philosophy:
+
+shared memory is **not** automatically safe just because it helps agents collaborate.
+
+Before memory leaves the local boundary, the runtime wants to guard against leaking sensitive data.
+
+That is exactly the kind of safety feature that teaching materials should highlight, because it is easy to forget in toy multi-agent demos.
+
+## What `toolUseSummaryGenerator.ts` teaches
+
+This file shows another durable abstraction layer: summarize a batch of tool work into a short label.
+
+### Annotated code fragment
+
+```ts
+const TOOL_USE_SUMMARY_SYSTEM_PROMPT = `Write a short summary label...`
+```
+
+and
+
+```ts
+const response = await queryHaiku({
+  systemPrompt: asSystemPrompt([TOOL_USE_SUMMARY_SYSTEM_PROMPT]),
+  userPrompt: `${contextPrefix}Tools completed:\n\n${toolSummaries}\n\nLabel:`,
+})
+```
+
+**Annotation**
+
+- The runtime does not only keep raw tool results.
+- It also creates compact human-readable summaries.
+- That improves mobile/compact UI surfaces and likely makes downstream state easier to browse.
+
+This is a powerful design idea:
+
+> durable state should exist at multiple abstraction levels, not only as raw logs.
+
+## Teaching takeaway
+
+### For beginners
+
+Agent memory can live in several forms:
+
+- raw conversation,
+- compact summary,
+- transcript segment,
+- synchronized team memory.
+
+### For advanced readers
+
+The hardest question is not “how do we save more state?”
+It is “which representation is safe, useful, and cheap enough for each consumer?”

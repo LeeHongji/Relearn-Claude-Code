@@ -26,6 +26,9 @@ const REQUIRED_PAGES = [
   "docs/claude-code/settings-and-remote-policy.md",
   "docs/claude-code/overflow-recovery-and-reactive-compact.md",
   "docs/claude-code/lsp-and-editor-feedback.md",
+  "docs/claude-code/settings-sync-and-live-refresh.md",
+  "docs/claude-code/tool-search-and-deferred-capabilities.md",
+  "docs/claude-code/session-transcripts-and-team-memory.md",
   "docs/source-tours/index.md",
   "docs/labs/index.md",
   "docs/appendix/source-atlas.md",
@@ -43,12 +46,15 @@ const REQUIRED_PAGES = [
   "docs/zh/claude-code/settings-and-remote-policy.md",
   "docs/zh/claude-code/overflow-recovery-and-reactive-compact.md",
   "docs/zh/claude-code/lsp-and-editor-feedback.md",
+  "docs/zh/claude-code/settings-sync-and-live-refresh.md",
+  "docs/zh/claude-code/tool-search-and-deferred-capabilities.md",
+  "docs/zh/claude-code/session-transcripts-and-team-memory.md",
   "docs/public/source-inventory.json",
 ];
 
 const MIN_MARKDOWN_COUNTS = {
   "docs/foundations": 4,
-  "docs/claude-code": 16,
+  "docs/claude-code": 19,
   "docs/source-tours": 4,
   "docs/labs": 3,
   "docs/appendix": 2,

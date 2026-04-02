@@ -1,8 +1,20 @@
 # Tool search and deferred capabilities
 
-Claude Code’s tool system is not only “here is a fixed registry.” The source shows a more advanced idea: tools and capabilities can be discovered, deferred, and surfaced progressively.
+Claude Code’s tool layer is more sophisticated than “register every tool and show everything up front.” The source reveals a strategy for **deferring capability exposure** and then letting the model discover or select tools as needed.
 
-## Relevant source areas
+## Why this subsystem matters
+
+As agent platforms grow, two problems show up quickly:
+
+1. there are too many tools to expose naively in every request,
+2. the runtime sometimes needs more reliable structured output than “please format JSON correctly.”
+
+Claude Code appears to address both with:
+
+- tool search / deferred loading,
+- a `StructuredOutput`-style synthetic tool surface.
+
+## Main source anchors
 
 - `src/utils/toolSearch.ts`
 - `src/tools/ToolSearchTool/ToolSearchTool.ts`
@@ -11,39 +23,108 @@ Claude Code’s tool system is not only “here is a fixed registry.” The sour
 - `src/utils/attachments.ts`
 - `src/tools/SyntheticOutputTool/SyntheticOutputTool.ts`
 
-## Why this subsystem matters
+## Architecture sketch
 
-A large agent platform eventually runs into two problems:
+```mermaid
+flowchart LR
+  registry[tool registry] --> defer[mark deferrable tools]
+  defer --> search[ToolSearchTool]
+  search --> model[model discovers/selects capability]
+  model --> runtime[runtime invokes selected tool]
+  runtime --> output[SyntheticOutput or regular result]
+```
 
-1. too many tools to expose naively all at once,
-2. structured output needs that are more precise than plain text.
+## What `toolSearch.ts` teaches
 
-Claude Code appears to address both with tool-search-aware behavior and a synthetic-output tool path.
+This file is valuable because it turns tool exposure into a **context-budget decision**, not just a static registry rule.
 
-## What the source teaches
+### Annotated code fragment
 
-### Tool search
+```ts
+export function getToolSearchMode(): ToolSearchMode {
+  const value = process.env.ENABLE_TOOL_SEARCH
+  // ...
+  return 'tst' // default: always defer MCP and shouldDefer tools
+}
+```
 
-`utils/toolSearch.ts` and `ToolSearchTool.ts` suggest a runtime that can reveal or reference capabilities more dynamically than a static always-on registry.
+**Annotation**
 
-### API coupling
+- Tool search is configurable, not hardcoded.
+- The runtime supports multiple modes (`tst`, `tst-auto`, `standard`).
+- That means the product can decide whether deferred discovery is always on, auto-triggered, or disabled.
 
-`services/api/claude.ts` includes tool-search-related header/beta handling, which is a reminder that capability discovery can affect the API contract itself.
+This is a strong systems lesson:
 
-### Message and attachment flow
+> “which tools exist?” and “which tools should be exposed right now?” are different questions.
 
-`utils/messages.ts` and `utils/attachments.ts` matter because discovered/deferred capabilities still need to be represented coherently in what the model sees and what the user sees.
+### Budget-awareness detail
 
-### Synthetic output
+The same file also includes threshold logic based on **context window percentage**. This shows that tool-search decisions are tied to prompt budget, not only developer taste.
 
-`SyntheticOutputTool.ts` is a useful teaching example because it shows that sometimes the runtime adds a structured-output surface as a tool, rather than expecting the model to format everything perfectly by prompt alone.
+## What `ToolSearchTool.ts` teaches
 
-## Main design lesson
+This tool makes deferred discovery model-callable.
 
-For beginners:
+### Annotated code fragment
 
-> Not every capability has to be fully visible all the time. Large agent platforms need discovery strategies.
+```ts
+query: z
+  .string()
+  .describe(
+    'Query to find deferred tools. Use "select:<tool_name>" for direct selection, or keywords to search.',
+  )
+```
 
-For advanced readers:
+**Annotation**
 
-> Tool search and synthetic output show that capability design is partly an API-shaping problem, not just a prompt or registry problem.
+- The tool is not only a search box; it also supports direct selection.
+- This reduces friction for the model once it already knows the tool name.
+- It is a nice example of turning one capability into both a **search interface** and a **selection interface**.
+
+## What `SyntheticOutputTool.ts` teaches
+
+This file is especially good teaching material because it exposes a runtime philosophy:
+
+sometimes the cleanest way to get structured output is to **treat it like a tool call** rather than trusting raw prose generation.
+
+### Annotated code fragment
+
+```ts
+export const SYNTHETIC_OUTPUT_TOOL_NAME = 'StructuredOutput'
+```
+
+and
+
+```ts
+async call(input) {
+  return {
+    data: 'Structured output provided successfully',
+    structured_output: input,
+  }
+}
+```
+
+**Annotation**
+
+- The runtime names structured output as an explicit capability.
+- The tool validates and returns machine-usable output.
+- This is a stronger contract than “please emit valid JSON at the end.”
+
+That matters because structured output is really an interface problem, not merely a prompt-writing problem.
+
+## Why API-layer support matters
+
+`services/api/claude.ts` references tool-search-related headers and beta behavior. That is an important reminder:
+
+tool discovery is not only local UX. It can also shape the upstream API request contract.
+
+## Teaching takeaway
+
+### For beginners
+
+Large agent systems need a way to expose power gradually instead of dumping every capability into every prompt.
+
+### For advanced readers
+
+Deferred capabilities and synthetic output show how registry design, prompt budget, and API compatibility all meet at the same architectural seam.
