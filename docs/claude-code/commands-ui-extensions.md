@@ -1,34 +1,35 @@
 # Commands, UI, and extensions
 
-Claude Code is not only an engine. It is a **developer product shell** wrapped around that engine.
+Claude Code is not only an engine. It is a **product shell** wrapped around that engine.
 
-That distinction matters.
+That product shell is what makes the system:
 
-Many readers understand:
+- operable,
+- visible,
+- interruptible,
+- configurable,
+- and extensible.
 
-- there is a loop,
-- there are tools,
-- there is some terminal UI.
+This page is about a deeper idea than “there are slash commands and some UI.”
 
-Fewer readers understand the more important product question:
+> **Commands, terminal UI, and extension surfaces are the layer that turns internal runtime state into a usable developer product.**
 
-> **How does Claude Code turn runtime state into a usable, trustworthy developer experience while still leaving room for extension?**
-
-This page answers that question.
+If you skip this layer, Claude Code looks like a smart loop with tools.
+If you study it, Claude Code starts to look like a real software product.
 
 ## Why this page matters
 
-If you only study the model loop, you can learn how Claude Code *thinks*.
+A serious agent product cannot leave everything to free-form prompting.
 
-If you study commands, UI, and extension boundaries, you learn how Claude Code becomes:
+Users need:
 
-- explorable,
-- interruptible,
-- configurable,
-- extensible,
-- and worth using as a daily product.
+- explicit commands,
+- visible state,
+- inspectable progress,
+- recoverable workflows,
+- controlled extension points.
 
-That is the difference between an agent runtime and an agent product.
+Claude Code’s command shell, Ink/React UI, and plugin/skill/MCP surfaces exist to solve those problems.
 
 ## Main source anchors
 
@@ -37,101 +38,116 @@ That is the difference between an agent runtime and an agent product.
 - `src/ink/components/App.tsx`
 - `src/components/tasks/*`
 - `src/components/permissions/*`
-- `src/services/plugins/pluginOperations.ts`
 - `src/cli/handlers/plugins.ts`
+- `src/services/plugins/pluginOperations.ts`
 
 ## Product-shell map
 
 ```mermaid
 flowchart TD
-  runtime[core runtime state] --> commands[commands.ts command surface]
-  runtime --> state[AppState / providers]
-  state --> ui[components/* + ink/*]
+  runtime[core runtime state] --> commands[commands.ts]
+  runtime --> appstate[AppState / Providers]
+  appstate --> ui[components/* + ink/*]
   commands --> ui
-  runtime --> extension[plugins / skills / MCP / custom agents]
-  extension --> commands
-  extension --> ui
+  runtime --> ext[plugins / skills / MCP / custom agents]
+  ext --> commands
+  ext --> ui
 ```
 
-This is the central idea:
+This is the key architectural claim:
 
 Claude Code does not expose its runtime directly.
-It wraps the runtime in a **product shell** made of commands, app state, UI primitives, and extension boundaries.
+It wraps the runtime in a product shell that decides:
+
+- which user-facing verbs exist,
+- how state becomes visible,
+- how extension surfaces are allowed to widen the product.
 
 ## Part 1 — `commands.ts` is the product verb registry
 
-At first glance, `commands.ts` is just a very large import-and-export file.
+At first glance, `commands.ts` looks like a huge import list.
 
-Architecturally, it is much more useful to read it as:
+Architecturally, it is better read as:
 
-> the canonical list of user-facing verbs the product chooses to expose.
+> the canonical list of **product verbs** that Claude Code chooses to make explicit.
 
 ### Annotated code
 
 ```ts
 import memory from './commands/memory/index.js'
 import mcp from './commands/mcp/index.js'
-import review from './commands/review.js'
+import review, { ultrareview } from './commands/review.js'
 import skills from './commands/skills/index.js'
 import tasks from './commands/tasks/index.js'
 import plugin from './commands/plugin/index.js'
 ```
 
-and later:
+### What this means
+
+These imports are not random convenience commands.
+They are the features the product wants to expose as explicit user operations:
+
+- inspect or manage memory,
+- manage MCP state,
+- run review flows,
+- browse skills,
+- manage background tasks,
+- manage plugins.
+
+That means commands are doing product design work:
+
+- deciding what should be explicit,
+- reducing ambiguity for the user,
+- and preventing every action from having to be inferred from prose.
+
+### Feature-gated command surfaces
+
+The file also includes many feature-gated commands:
 
 ```ts
 const bridge = feature('BRIDGE_MODE')
   ? require('./commands/bridge/index.js').default
   : null
+
+const workflowsCmd = feature('WORKFLOW_SCRIPTS')
+  ? require('./commands/workflows/index.js').default
+  : null
 ```
 
-### What this means
+This teaches an important lesson:
 
-The command layer is doing two things at once:
+> product verbs are part of the rollout surface.
 
-1. defining the **user-visible command language**,
-2. acting as a product-level feature gate surface.
+Commands are not only runtime wiring. They are part of the product’s public contract, so the repo treats them with the same feature-gating discipline it uses elsewhere.
 
-That means commands are not just convenience wrappers.
-They are how the product decides:
+## Part 2 — commands sit above the engine, not inside it
 
-- which runtime capabilities deserve explicit verbs,
-- which features are advanced/internal/feature-gated,
-- which flows should be user-driven instead of purely model-driven.
-
-## Part 2 — commands are a shell around the engine, not a side feature
-
-This is one of the most important product lessons in the repo.
-
-A weaker product would push everything through free-form prompting:
+If the model loop were the only interface, users would have to phrase everything as natural language:
 
 ```text
-user asks model -> model figures it out
+please compact the conversation
+please show background tasks
+please inspect plugins
 ```
 
-Claude Code does not rely only on that.
+Claude Code instead offers direct verbs like:
 
-It gives users explicit control surfaces like:
-
-- `/memory`
 - `/compact`
-- `/mcp`
 - `/tasks`
-- `/skills`
-- `/review`
 - `/plugin`
+- `/skills`
+- `/mcp`
 
-Why? Because some actions are better represented as **product verbs** than as ambiguous natural-language requests.
+That means commands are a **shell around the engine**.
 
-This lowers ambiguity and improves trust.
+The engine remains model-centric.
+The command layer gives users a precise product language for interacting with that engine.
 
-## Part 3 — `components/App.tsx` and `ink/components/App.tsx` define the shell boundary
+## Part 3 — `components/App.tsx` shows what the shell considers globally important
 
-These files are not “just React wrappers.”
+This file is small, but its structure is revealing.
 
-They are the beginning of the product shell.
-
-### Annotated code: high-level app wrapper
+### Annotated code
 
 ```ts
 export function App({
@@ -157,125 +173,108 @@ export function App({
 
 ### What this means
 
-This wrapper tells you exactly what the product shell thinks is globally important:
+Before the visible UI even renders, the shell is establishing:
 
 - app state,
-- metrics,
 - stats,
-- change propagation.
+- metrics,
+- centralized app-state change handling.
 
-In other words, the runtime is not merely “rendered.”
-It is surrounded by shared product contexts.
+So the shell is not merely visual.
+It is setting up the **shared product context** that the rest of the terminal UI depends on.
 
-### Annotated code: terminal-native shell behavior
+## Part 4 — `ink/components/App.tsx` proves the terminal is a real interaction runtime
 
-`src/ink/components/App.tsx` is where the shell becomes terminal-specific.
+This file is one of the best reminders that terminal UI is not “just print text.”
 
-Important concerns visible there include:
+It handles concerns like:
 
-- raw mode handling,
+- raw mode,
 - cursor visibility,
 - focus and hover state,
 - keyboard dispatch,
-- click and selection tracking,
-- terminal resume after long stdin gaps.
+- selection drag,
+- hyperlink open behavior,
+- incomplete escape-sequence timing,
+- terminal resume after long gaps,
+- alternate-screen and mouse-tracking interactions.
 
-That means the terminal shell is not just text output.
-It is a real interaction runtime.
+### What this means
 
-## Part 4 — terminal UX is a trust mechanism
+Claude Code’s terminal shell is doing many of the same jobs a browser UI runtime would do:
 
-This is where the user-experience chapter in `how-claude-code-works` is especially helpful as a quality reference.
+- normalize events,
+- maintain focus state,
+- coordinate input and rendering,
+- preserve interaction invariants.
 
-Claude Code’s UI is not only “pretty terminal output.”
-It is how the product makes autonomous behavior:
+That is why `ink` should be read as infrastructure, not ornament.
 
-- visible,
-- interruptible,
-- debuggable,
-- reviewable.
+## Part 5 — UI is how trust becomes visible
 
-Examples:
+One of the most important lessons from `components/tasks/*` and `components/permissions/*` is that trust is not only a backend concern.
 
-- permission dialogs,
-- task detail dialogs,
-- background status pills,
-- scrolling output,
-- link/click behavior,
-- focus-aware rendering,
-- explicit shell / tool progress messages.
+The user needs to see:
 
-That is why terminal UX belongs in architecture discussions.
+- what the system is doing,
+- whether it is waiting on approval,
+- what background work exists,
+- what teammate or task context is active,
+- whether a command or task is still progressing.
 
-## Part 5 — app state is where runtime becomes product
+That is why tasks, permissions, and dialogs belong in a “commands/UI/extensions” architecture page.
 
-The shell depends on a strong state boundary.
+The product shell is where internal state becomes legible.
 
-`AppState` and related state/update surfaces are where:
+## Part 6 — tasks are a perfect example of runtime → shell projection
 
-- permission mode,
-- tasks,
-- teammate state,
-- MCP resources,
-- plugin state,
-- prompt suggestions,
-- sandbox status
-
-become coherent enough to drive the interface.
-
-This is an important seam:
-
-> runtime subsystems own the truth, but app state is what makes that truth visible and navigable.
-
-That is why UI pages should never be written as if they are disconnected from orchestration or permissions.
-
-## Part 6 — tasks are the clearest product-shell example
-
-One of the best examples of the runtime→product seam is the task subsystem.
-
-The pattern looks like this:
+The task subsystem is one of the clearest examples of this shell boundary:
 
 ```mermaid
 flowchart LR
-  runtime_task[task state in runtime] --> dialog[/tasks command]
-  dialog --> components[task dialog + footer pills]
-  components --> user[visible work / selectable work / teammate views]
+  runtime_task[durable task state] --> command[/tasks]
+  command --> dialog[BackgroundTasksDialog]
+  dialog --> footer[BackgroundTaskStatus footer pills]
+  footer --> user[visible progress / teammate views]
 ```
 
-The product shell does not invent task state on its own.
-It **projects** runtime task state into:
+This pattern matters:
 
-- commands,
-- dialogs,
-- footer summaries,
-- detail panes,
-- teammate navigation.
+- runtime owns the truth,
+- commands provide an entry point,
+- UI projects the truth into something the user can inspect and navigate.
 
-That is exactly the pattern to look for across the rest of the product.
+That is the design pattern to look for across the rest of the product shell.
 
-## Part 7 — extensions are separated because `query.ts` cannot own everything
+## Part 7 — extension boundaries exist because the loop cannot own everything
 
-Claude Code exposes multiple extension surfaces:
+Claude Code exposes several extension surfaces:
 
-| Surface | What it extends |
+| Surface | Main purpose |
 | --- | --- |
 | Commands | explicit user verbs |
-| Skills | reusable workflows |
-| Plugins | packaged product extensions |
-| MCP | external tool/resource protocol |
-| Custom agents | specialized behavior/persona surfaces |
+| Skills | reusable workflows and prompts |
+| Plugins | packaged extension lifecycle |
+| MCP | external tool/resource connectivity |
+| Custom agents | specialized role/capability surfaces |
 
-The architectural lesson is not only “there are many extension types.”
+The important architecture lesson is not that there are many extension types.
 
-It is:
+It is that Claude Code does **not** try to solve every extension problem with one abstraction.
 
-> the product deliberately uses different extension boundaries for different jobs.
+That is a sign of maturity.
 
-This prevents everything from collapsing into one giant hook or one giant plugin mechanism.
+Different extension surfaces exist because they solve different problems:
 
-## Part 8 — plugin operations show lifecycle discipline
+- commands expose product verbs,
+- skills capture workflow knowledge,
+- plugins manage lifecycle and installation,
+- MCP handles external capability bridges,
+- custom agents encapsulate role-specific behaviors.
 
-`pluginOperations.ts` is a good example of extension design done carefully.
+## Part 8 — `pluginOperations.ts` shows lifecycle discipline
+
+This file is especially useful because it documents the intended separation between product shell and core operations.
 
 ### Annotated code
 
@@ -283,33 +282,43 @@ This prevents everything from collapsing into one giant hook or one giant plugin
 /**
  * Core plugin operations (install, uninstall, enable, disable, update)
  *
+ * This module provides pure library functions that can be used by both:
+ * - CLI commands
+ * - Interactive UI
+ *
  * Functions in this module:
  * - Do NOT call process.exit()
  * - Do NOT write to console
- * - Return result objects indicating success/failure with messages
+ * - Return result objects
  */
 ```
 
 ### What this means
 
-This file is teaching a very useful discipline:
+This is excellent product architecture:
 
-- core operations are pure-ish library functions,
-- CLI wrappers live elsewhere,
-- UI can also reuse the same operations,
-- lifecycle logic is centralized instead of duplicated.
+- core operations are reusable,
+- CLI behavior is layered on top,
+- UI behavior is layered on top,
+- side effects like process exit and console output stay outside the operation core.
 
-That separation is exactly what makes plugin handling a real product subsystem instead of scattered CLI code.
+That means plugin lifecycle logic is portable across multiple product surfaces.
 
-## Part 9 — why this all belongs in one article
+This is exactly the kind of design that keeps a product shell maintainable.
 
-At first, commands, UI, and extension surfaces may feel like separate topics.
+## Part 9 — why this page should stay unified for now
 
-But architecturally they belong together because they all answer the same question:
+At some point, these topics may become multiple deeper chapters:
 
-> how does Claude Code expose internal capability to the human user, and how does it widen that capability without turning the core loop into a mess?
+- commands as product shell,
+- terminal UX / Ink runtime,
+- extension boundaries.
 
-That is the unifying idea of the product shell.
+But for now, it is still valuable to teach them together because they answer the same system question:
+
+> how does Claude Code expose internal capability to a human user without collapsing the core runtime into a giant monolith?
+
+That is the unifying seam.
 
 ## Part 10 — what builders should steal
 
@@ -317,19 +326,19 @@ That is the unifying idea of the product shell.
 
 Steal these product lessons:
 
-1. not every capability should be a prompt,
+1. not every capability should be hidden behind prompting,
 2. explicit commands reduce ambiguity,
-3. UI is part of trust, not only part of style,
-4. extension surfaces should be named and purposeful.
+3. terminal UI is part of trust,
+4. extensions should have named boundaries.
 
 ### For advanced readers
 
-Steal these architectural lessons:
+Steal these architecture lessons:
 
-1. keep core operations separate from CLI/console side effects,
-2. let app state translate runtime truth into product UX,
-3. use multiple extension boundaries instead of one catch-all hook system,
-4. treat terminal UI as a real interaction runtime.
+1. keep core operations separate from CLI/UI side effects,
+2. use app state as the bridge between runtime truth and product visibility,
+3. separate extension boundaries by responsibility,
+4. treat terminal interactivity as a real runtime concern.
 
 ## Teaching takeaway
 
@@ -337,4 +346,4 @@ The best one-sentence summary is:
 
 > Claude Code’s commands, UI, and extensions together form a **product shell** that makes the runtime visible, operable, and extensible.
 
-That shell is not peripheral. It is one of the core reasons the system feels like a serious engineering product instead of a hidden model loop.
+That shell is one of the reasons the system feels like a serious engineering product rather than a hidden model loop with a prompt box.
