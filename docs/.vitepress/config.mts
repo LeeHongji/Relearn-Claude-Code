@@ -28,6 +28,11 @@ const enSidebar = [
         text: "Tools and Permissions",
         link: "/claude-code/tools-and-permissions",
       },
+      { text: "MCP and External Tools", link: "/claude-code/mcp-and-external-tools" },
+      { text: "Skills and Prompt Loading", link: "/claude-code/skills-and-prompt-loading" },
+      { text: "Plugins and Extension Surfaces", link: "/claude-code/plugins-and-extension-surfaces" },
+      { text: "Tasks and Orchestration", link: "/claude-code/tasks-and-orchestration" },
+      { text: "Ink and Terminal UI", link: "/claude-code/ink-and-terminal-ui" },
       {
         text: "Commands, UI, and Extensions",
         link: "/claude-code/commands-ui-extensions",
@@ -99,6 +104,11 @@ const zhSidebar = [
       { text: "运行时主循环", link: "/zh/claude-code/runtime-loop" },
       { text: "上下文工程", link: "/zh/claude-code/context-engineering" },
       { text: "工具与权限", link: "/zh/claude-code/tools-and-permissions" },
+      { text: "MCP 与外部工具", link: "/zh/claude-code/mcp-and-external-tools" },
+      { text: "Skills 与提示词装载", link: "/zh/claude-code/skills-and-prompt-loading" },
+      { text: "插件与扩展边界", link: "/zh/claude-code/plugins-and-extension-surfaces" },
+      { text: "任务与编排", link: "/zh/claude-code/tasks-and-orchestration" },
+      { text: "Ink 与终端渲染", link: "/zh/claude-code/ink-and-terminal-ui" },
       {
         text: "命令、界面与扩展",
         link: "/zh/claude-code/commands-ui-extensions",

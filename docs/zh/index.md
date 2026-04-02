@@ -48,3 +48,12 @@ features:
 - **如果你刚接触 agent**：先读 [什么是 Agent？](/zh/foundations/what-is-an-agent) 和 [Agent 循环](/zh/foundations/agent-loop)。
 - **如果你已经在做 agent 产品**：建议从 [运行时主循环](/zh/claude-code/runtime-loop) 和 [工具与权限](/zh/claude-code/tools-and-permissions) 开始。
 - **如果你只想快速认仓库**：直接看 [仓库地图](/zh/claude-code/repo-map) 和 [源码图谱](/zh/appendix/source-atlas)。
+
+
+## 进阶专题
+
+- [MCP 与外部工具](/zh/claude-code/mcp-and-external-tools)
+- [Skills 与提示词装载](/zh/claude-code/skills-and-prompt-loading)
+- [插件与扩展边界](/zh/claude-code/plugins-and-extension-surfaces)
+- [任务与编排](/zh/claude-code/tasks-and-orchestration)
+- [Ink 与终端渲染](/zh/claude-code/ink-and-terminal-ui)
