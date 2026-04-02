@@ -169,6 +169,42 @@ Add narrowly scoped chapters only after P0 pages become deeper.
 | `docs/zh/learning-path.md` | rewrite later | P3 | **中文学习路径** | Update only after English learning-path rewrite. |
 | `docs/zh/publishing.md` | keep/light rewrite | P3 | **中文发布说明** | Minimal maintenance page. |
 
+## Source anchors for the first rewrite cluster
+
+### 1. `architecture.md` rewrite anchors
+
+- `ref_repo/claude-code/src/QueryEngine.ts` — session orchestration boundary, not the whole runtime.
+- `ref_repo/claude-code/src/Tool.ts` — shared execution contract and `ToolUseContext`.
+- `ref_repo/claude-code/src/tools.ts` — compile-time + runtime tool-pool assembly.
+- `ref_repo/claude-code/src/components/App.tsx` — top-level interactive session wrapper.
+- `ref_repo/claude-code/src/ink/components/App.tsx` — terminal runtime shell: input, focus, cursor, raw mode, selection.
+
+### 2. `tools-and-permissions.md` rewrite anchors
+
+- `ref_repo/claude-code/src/Tool.ts` — tool metadata, schema, permission context, UI hooks.
+- `ref_repo/claude-code/src/tools.ts` — `getAllBaseTools()`, `getTools()`, `assembleToolPool()`.
+- `ref_repo/claude-code/src/services/tools/toolOrchestration.ts` — concurrency-safe partitioning and deterministic context mutation.
+- `ref_repo/claude-code/src/constants/tools.ts` — allowed/disallowed tool sets for agent modes.
+- `ref_repo/claude-code/src/utils/toolSearch.ts` — deferred capability discovery.
+
+### 3. `tasks-and-orchestration.md` rewrite anchors
+
+- `ref_repo/claude-code/src/tasks.ts` — task type registry mirroring the tool registry pattern.
+- `ref_repo/claude-code/src/utils/tasks.ts` — durable task-list storage, locking, team/shared-task resolution.
+- `ref_repo/claude-code/src/tools/AgentTool/AgentTool.tsx` — worker tool pools, async agent registration, notification flow.
+- `ref_repo/claude-code/src/tools/AgentTool/agentToolUtils.ts` — per-agent tool filtering.
+- `ref_repo/claude-code/src/tools/AgentTool/forkSubagent.ts` — forked-message model and `<task-notification>` interaction shape.
+- `ref_repo/claude-code/src/components/tasks/*` — tasks as a UI concept, not just background metadata.
+
+### 4. `commands-ui-extensions.md` rewrite anchors
+
+- `ref_repo/claude-code/src/components/App.tsx` — React providers and top-level app state wrapping.
+- `ref_repo/claude-code/src/ink/components/App.tsx` — terminal event loop and UX plumbing.
+- `ref_repo/claude-code/src/state/AppState.tsx` — state surface exposed to the UI tree.
+- `ref_repo/claude-code/src/state/onChangeAppState.ts` — side effects triggered by state transitions.
+- `ref_repo/claude-code/src/commands/*` — user-facing shell around the engine.
+- `ref_repo/claude-code/src/components/permissions/*` — approvals as product UX, not backend-only logic.
+
 ## Recommended execution order
 
 ### Step 1 — rewrite the canon pages that unlock everything else
