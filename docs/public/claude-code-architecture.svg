@@ -1,0 +1,11 @@
+<svg width="1200" height="720" viewBox="0 0 1200 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="720" rx="28" fill="#0b1220"/>
+  <rect x="70" y="70" width="1060" height="120" rx="20" fill="#115e59"/>
+  <rect x="70" y="220" width="1060" height="120" rx="20" fill="#1d4ed8"/>
+  <rect x="70" y="370" width="1060" height="120" rx="20" fill="#6d28d9"/>
+  <rect x="70" y="520" width="1060" height="120" rx="20" fill="#c2410c"/>
+  <text x="100" y="122" font-family="Inter, Arial, sans-serif" font-size="30" fill="white">1. Boot and session setup — main.tsx, init entrypoints, startup prefetch</text>
+  <text x="100" y="272" font-family="Inter, Arial, sans-serif" font-size="30" fill="white">2. Query and control flow — QueryEngine.ts, query.ts, transitions, budgets</text>
+  <text x="100" y="422" font-family="Inter, Arial, sans-serif" font-size="30" fill="white">3. Tools and services — Tool.ts, tools.ts, services/, permissions, MCP</text>
+  <text x="100" y="572" font-family="Inter, Arial, sans-serif" font-size="30" fill="white">4. Product experience — commands/, components/, ink/, hooks/, extensions</text>
+</svg>

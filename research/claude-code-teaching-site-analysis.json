@@ -1,0 +1,29 @@
+{
+  "title": "Claude Code teaching site analysis",
+  "audiences": [
+    "beginner",
+    "builder",
+    "senior-engineer"
+  ],
+  "recommended_sequence": [
+    "runtime",
+    "tools",
+    "context",
+    "cli-and-extensibility",
+    "safety",
+    "memory-and-multi-agent"
+  ],
+  "reference_roles": {
+    "claude-code": "primary source evidence",
+    "how-claude-code-works": "topic-based narrative backbone",
+    "claude-code-from-scratch": "minimal teaching bridge"
+  },
+  "site_model": {
+    "language": "english-first-with-chinese-support",
+    "navigation": [
+      "foundations",
+      "claude-code",
+      "appendix"
+    ]
+  }
+}

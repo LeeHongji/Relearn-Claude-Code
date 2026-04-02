@@ -1,0 +1,16 @@
+{
+  "name": "relearn-claude-code",
+  "version": "0.1.0",
+  "private": true,
+  "description": "English-first, bilingual (English + 中文) teaching site for understanding Claude Code, AI agents, and production-grade coding-agent architecture.",
+  "type": "module",
+  "scripts": {
+    "docs:dev": "vitepress dev docs --host 0.0.0.0 --port 4173",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs --host 0.0.0.0 --port 4173"
+  },
+  "devDependencies": {
+    "vitepress": "^1.6.4",
+    "vue": "^3.5.22"
+  }
+}

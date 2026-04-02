@@ -1,0 +1,14 @@
+{
+  "topLevel": [
+    { "path": "utils", "files": 576, "role": "runtime infrastructure" },
+    { "path": "components", "files": 405, "role": "terminal UX" },
+    { "path": "commands", "files": 219, "role": "slash commands" },
+    { "path": "tools", "files": 212, "role": "tool implementations" },
+    { "path": "services", "files": 145, "role": "subsystems" },
+    { "path": "hooks", "files": 104, "role": "cross-cutting hooks" },
+    { "path": "ink", "files": 98, "role": "terminal rendering" },
+    { "path": "skills", "files": 53, "role": "reusable workflows" },
+    { "path": "memdir", "files": 9, "role": "memory subsystem" },
+    { "path": "coordinator", "files": 2, "role": "multi-agent coordination" }
+  ]
+}
