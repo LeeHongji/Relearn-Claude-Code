@@ -37,11 +37,11 @@ This repo is a **teaching platform**, not just a notes dump. It is designed for 
 
 ## The three source pillars
 
-| Source | Role in this site | Why it matters |
-| --- | --- | --- |
-| `ref_repo/claude-code` | Primary subject | Large-scale production-style coding agent architecture |
-| `ref_repo/how-claude-code-works` | Teaching reference | A strong topic-based way to explain a very large codebase |
-| `ref_repo/claude-code-from-scratch` | Minimal mirror | Shows what the smallest useful version looks like |
+| Source                              | Role in this site  | Why it matters                                            |
+| ----------------------------------- | ------------------ | --------------------------------------------------------- |
+| `ref_repo/claude-code`              | Primary subject    | Large-scale production-style coding agent architecture    |
+| `ref_repo/how-claude-code-works`    | Teaching reference | A strong topic-based way to explain a very large codebase |
+| `ref_repo/claude-code-from-scratch` | Minimal mirror     | Shows what the smallest useful version looks like         |
 
 ## Suggested first stops
 
@@ -61,3 +61,9 @@ Claude Code is worth studying because it is not “just prompt engineering.” I
 - slash commands, skills, plugins, MCP, and multi-agent features.
 
 That means the codebase teaches more than “how to call an LLM.” It teaches how to turn a model into a **reliable developer-facing system**.
+
+## New advanced paths
+
+- [Settings and Remote Policy](/claude-code/settings-and-remote-policy)
+- [Overflow Recovery and Reactive Compact](/claude-code/overflow-recovery-and-reactive-compact)
+- [LSP and Editor Feedback](/claude-code/lsp-and-editor-feedback)

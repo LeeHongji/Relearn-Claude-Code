@@ -1,27 +1,127 @@
 # Relearn Claude Code
 
-English-first, bilingual (English + 中文) teaching platform for understanding:
+[![Live Site](https://img.shields.io/badge/live-GitHub%20Pages-0f766e?style=for-the-badge)](https://leehongji.github.io/Relearn-Claude-Code/)
+[![Docs](https://img.shields.io/badge/docs-VitePress-646cff?style=for-the-badge)](./docs)
+[![Language](https://img.shields.io/badge/language-English--first%20%2B%20中文-2563eb?style=for-the-badge)](./docs/zh/index.md)
+[![Status](https://img.shields.io/badge/status-verified-16a34a?style=for-the-badge)](./RELEASE_NOTES.md)
 
-- Claude Code as a production-grade coding agent,
-- AI agent fundamentals for newcomers,
-- system-design patterns useful to senior engineers.
+> A source-grounded, English-first, bilingual teaching platform for understanding **Claude Code**, **AI coding agents**, and the engineering patterns behind production-grade developer tools.
 
-This repo is built from three reference sources in `../ref_repo/`:
+<p align="center">
+  <a href="https://leehongji.github.io/Relearn-Claude-Code/"><strong>🌐 Read the site</strong></a>
+  &nbsp;&nbsp;·&nbsp;&nbsp;
+  <a href="./PR_DESCRIPTION.md"><strong>📝 PR-style summary</strong></a>
+  &nbsp;&nbsp;·&nbsp;&nbsp;
+  <a href="./RELEASE_NOTES.md"><strong>📦 Release notes</strong></a>
+</p>
 
-1. `claude-code` — the large research fork and primary source subject
+<p align="center">
+  <img src="./docs/public/agent-stack.svg" alt="Agent stack" width="280" />
+</p>
+
+## Why this project exists
+
+Claude Code is large enough that most people hit one of two failure modes:
+
+1. **Beginners** get lost in the sheer size of the codebase.
+2. **Experienced engineers** can navigate the repo, but still want a cleaner map of what matters and why.
+
+This repo exists to bridge that gap.
+
+It teaches:
+
+- what an AI coding agent is,
+- how Claude Code’s runtime is structured,
+- how tools, permissions, memory, and UI fit together,
+- and how to extract reusable architecture lessons for your own agent systems.
+
+## Project tags
+
+`AI Agents` · `Claude Code` · `Coding Agents` · `TypeScript` · `VitePress` · `Source Tours` · `LLM Systems` · `Prompt Engineering` · `Tooling` · `Memory` · `Permissions` · `MCP` · `LSP`
+
+## Learning model
+
+```mermaid
+flowchart LR
+  A[AI agent foundations] --> B[Minimal implementation intuition]
+  B --> C[Claude Code source deep dives]
+  C --> D[Source tours and labs]
+  D --> E[Build your own agent systems]
+```
+
+## What makes this repo different
+
+### 1. English-first, but bilingual
+
+The main learning path is written in English for broad accessibility, while `docs/zh/` provides Chinese support pages and mirrored navigation where it helps the most.
+
+### 2. Source-grounded, not speculative
+
+The explanations are anchored to concrete source areas under `../ref_repo/claude-code`, supported by:
+
+1. `claude-code` — the primary subject
 2. `how-claude-code-works` — topic-oriented architecture explanations
 3. `claude-code-from-scratch` — the minimal teaching implementation
 
-## What is inside
+### 3. Built for both beginners and senior engineers
 
-- `docs/` — the VitePress site
-- `docs/foundations/` — AI agent basics
-- `docs/claude-code/` — source-grounded deep dives
-- `docs/appendix/` — glossary and source atlas
-- `docs/zh/` — Chinese mirrors/supporting pages
-- `research/` — maintainers' analysis artifacts used to shape the site
-- `scripts/verify-analysis.cjs` — validates the analysis pack
-- `test/analysis.test.cjs` — lightweight Node test for the research artifacts
+The site is intentionally layered:
+
+- **Foundations** for readers new to agent systems
+- **Deep dives** for architecture-level understanding
+- **Source tours** for repo navigation
+- **Labs** for implementation practice
+
+## Current site map
+
+| Section              | Purpose                                                |
+| -------------------- | ------------------------------------------------------ |
+| `docs/foundations/`  | AI agent basics, loop, context, tools, safety          |
+| `docs/claude-code/`  | Source-grounded deep dives into Claude Code subsystems |
+| `docs/source-tours/` | Execution-path reading guides                          |
+| `docs/labs/`         | Hands-on exercises                                     |
+| `docs/appendix/`     | Glossary, source atlas, publishing notes               |
+| `docs/zh/`           | Chinese support and mirrored entry pages               |
+
+## Recommended reading paths
+
+### If you are new to agents
+
+Start with:
+
+1. `docs/foundations/what-is-an-agent.md`
+2. `docs/foundations/agent-loop.md`
+3. `docs/foundations/context-memory.md`
+4. `docs/foundations/tools-safety.md`
+
+### If you want to understand Claude Code quickly
+
+Start with:
+
+1. `docs/claude-code/architecture.md`
+2. `docs/claude-code/runtime-loop.md`
+3. `docs/claude-code/tools-and-permissions.md`
+4. `docs/appendix/source-atlas.md`
+
+### If you want implementation ideas for your own agent
+
+Start with:
+
+1. `docs/labs/add-a-tool.md`
+2. `docs/labs/compact-context.md`
+3. `docs/labs/multi-agent-readiness.md`
+4. `docs/claude-code/building-your-own.md`
+
+## Advanced topics already covered
+
+- MCP and external tools
+- Skills and prompt loading
+- Plugins and extension surfaces
+- Tasks and orchestration
+- Ink and terminal UI
+- Managed settings and policy
+- Overflow recovery and reactive compact
+- LSP and editor intelligence
 
 ## Local development
 
@@ -30,33 +130,31 @@ npm install
 npm run docs:dev
 ```
 
-## Production build
+## Verification commands
 
 ```bash
+npm run lint
+npm test
 npm run docs:build
+DOCS_BASE=/demo/ npm run docs:build
 ```
 
-## Current teaching shape
+## Deployment
 
-The current site is organized as:
+- Workflow: `.github/workflows/deploy-docs.yml`
+- Live site: https://leehongji.github.io/Relearn-Claude-Code/
 
-1. **Foundations** — what an agent is, how the loop works, why context/tools/safety matter
-2. **Claude Code Deep Dive** — architecture, repo map, runtime loop, context engineering, permissions, extensibility
-3. **Source Tours** — follow real execution paths through startup, tools, context, and UI
-4. **Labs** — turn the material into implementation exercises
-5. **Appendix** — source atlas, glossary, and publishing guidance
-6. **Chinese support** — mirrored entry pages for bilingual reading
+## Repo companion files
 
-## Publishing
-
-This repo now includes a GitHub Pages workflow:
-
-- `.github/workflows/deploy-docs.yml`
-
-The docs config also supports a deployment base path via `DOCS_BASE`.
+- `RELEASE_NOTES.md` — release/changelog style summary
+- `PR_DESCRIPTION.md` — reusable PR narrative
+- `research/` — maintainers’ analysis artifacts
+- `scripts/verify-analysis.cjs` — content verification
+- `scripts/verify-docs-structure.cjs` — docs-structure verification
 
 ## Maintainer notes
 
-- English is the canonical language for the main learning path.
-- Chinese pages support accessibility and cross-language study.
-- `../ref_repo` is treated as read-only source material.
+- English is the canonical source path.
+- Chinese support pages should improve accessibility without duplicating noise.
+- `../ref_repo` is treated as read-only source evidence.
+- Sequential VitePress builds are safer than concurrent ones because `.vitepress/.temp` can race during rendering.

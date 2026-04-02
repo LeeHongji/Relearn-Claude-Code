@@ -37,18 +37,17 @@ features:
 
 ## 三个核心参考源
 
-| 来源 | 在本站中的作用 | 价值 |
-| --- | --- | --- |
-| `ref_repo/claude-code` | 主分析对象 | 生产级 coding agent 的真实大体量架构 |
-| `ref_repo/how-claude-code-works` | 教学表达参考 | 展示如何把大仓库拆成专题来讲 |
-| `ref_repo/claude-code-from-scratch` | 最小实现镜像 | 帮助理解“最少需要什么” |
+| 来源                                | 在本站中的作用 | 价值                                 |
+| ----------------------------------- | -------------- | ------------------------------------ |
+| `ref_repo/claude-code`              | 主分析对象     | 生产级 coding agent 的真实大体量架构 |
+| `ref_repo/how-claude-code-works`    | 教学表达参考   | 展示如何把大仓库拆成专题来讲         |
+| `ref_repo/claude-code-from-scratch` | 最小实现镜像   | 帮助理解“最少需要什么”               |
 
 ## 推荐入口
 
 - **如果你刚接触 agent**：先读 [什么是 Agent？](/zh/foundations/what-is-an-agent) 和 [Agent 循环](/zh/foundations/agent-loop)。
 - **如果你已经在做 agent 产品**：建议从 [运行时主循环](/zh/claude-code/runtime-loop) 和 [工具与权限](/zh/claude-code/tools-and-permissions) 开始。
 - **如果你只想快速认仓库**：直接看 [仓库地图](/zh/claude-code/repo-map) 和 [源码图谱](/zh/appendix/source-atlas)。
-
 
 ## 进阶专题
 
@@ -57,3 +56,6 @@ features:
 - [插件与扩展边界](/zh/claude-code/plugins-and-extension-surfaces)
 - [任务与编排](/zh/claude-code/tasks-and-orchestration)
 - [Ink 与终端渲染](/zh/claude-code/ink-and-terminal-ui)
+- [设置与远程策略](/zh/claude-code/settings-and-remote-policy)
+- [LSP 与编辑器反馈](/zh/claude-code/lsp-and-editor-feedback)
+- [溢出恢复与响应式压缩](/zh/claude-code/overflow-recovery-and-reactive-compact)
