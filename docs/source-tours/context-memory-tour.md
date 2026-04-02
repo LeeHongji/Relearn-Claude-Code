@@ -6,6 +6,14 @@ This tour explains how Claude Code survives long sessions without turning the mo
 
 `src/context.ts → src/memdir/memdir.ts → services/compact/autoCompact.ts → services/compact/compact.ts`
 
+```mermaid
+flowchart LR
+  context["src/context.ts"] --> memdir["src/memdir/memdir.ts"]
+  memdir --> auto["autoCompact.ts"]
+  auto --> compact["compact.ts"]
+  compact --> continuity[Session continuity]
+```
+
 ## 1. `src/context.ts`
 
 This file is the structured front door for prompt context.
@@ -77,3 +85,9 @@ After this tour, you should be able to explain:
 - the difference between context assembly and memory persistence,
 - why automatic compaction needs thresholds and failure limits,
 - why long-context resilience is an architecture problem, not a model prompt trick.
+
+## Continue the path
+
+- Previous: [Tools and Permission Tour](/source-tours/tools-permission-tour)
+- Next: [Commands and UI Tour](/source-tours/commands-ui-tour)
+- Deep dive pair: [Context Engineering](/claude-code/context-engineering)

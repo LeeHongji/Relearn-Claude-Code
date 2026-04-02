@@ -6,6 +6,13 @@ This lab teaches why “just keep appending messages” eventually fails.
 
 Add a basic compaction strategy to a minimal agent.
 
+```mermaid
+flowchart LR
+  threshold[Pick a threshold] --> keep[Keep the live working set]
+  keep --> summarize[Summarize older history]
+  summarize --> continue[Continue with a smaller context]
+```
+
 ## Minimal target
 
 When token usage or message length crosses a threshold:
@@ -63,3 +70,9 @@ Produce:
 - your compaction threshold,
 - your keep-vs-summarize policy,
 - one improvement inspired by Claude Code.
+
+## Continue the lab path
+
+- Previous: [Add a Tool](/labs/add-a-tool)
+- Next: [Multi-Agent Readiness](/labs/multi-agent-readiness)
+- Deep dive pair: [Context Engineering](/claude-code/context-engineering)

@@ -6,6 +6,15 @@ This tour follows how Claude Code turns model-emitted tool calls into controlled
 
 `src/Tool.ts → src/tools.ts → services/tools/toolOrchestration.ts → services/tools/StreamingToolExecutor.ts → tools/BashTool/* → utils/permissions/*`
 
+```mermaid
+flowchart LR
+  contract["src/Tool.ts"] --> registry["src/tools.ts"]
+  registry --> orchestration["toolOrchestration.ts"]
+  orchestration --> streaming["StreamingToolExecutor.ts"]
+  streaming --> bash["tools/BashTool/*"]
+  bash --> perms["utils/permissions/*"]
+```
+
 ## 1. Shared tool contract
 
 Start in `src/Tool.ts`.
@@ -78,16 +87,21 @@ Compare with `../ref_repo/claude-code-from-scratch/src/tools.ts`.
 That file shows the essence:
 
 - define tool schemas,
-- run a tool,
-- return a result.
+- execute them,
+- feed results back.
 
-Claude Code then layers in concurrency policy, UI, permissioning, and safety.
+Claude Code shows what is required once the tool layer becomes a trusted product surface.
 
 ## What to write down
 
 After this tour, you should be able to explain:
 
-- why shared tool contracts matter,
-- where concurrency decisions are made,
-- why shell safety is separated into multiple files,
-- which parts of tool execution belong in the runtime rather than the prompt.
+- why tool contracts and execution policy are separate concerns,
+- where concurrency is allowed vs denied,
+- why shell safety becomes a subsystem instead of an if-statement.
+
+## Continue the path
+
+- Previous: [Startup to First Turn](/source-tours/startup-to-turn)
+- Next: [Context and Memory Tour](/source-tours/context-memory-tour)
+- Deep dive pair: [Tools and Permissions](/claude-code/tools-and-permissions)

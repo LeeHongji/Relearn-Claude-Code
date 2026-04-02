@@ -6,6 +6,14 @@ This lab is for builders who are tempted to add multiple agents too early.
 
 Evaluate whether your current single-agent runtime is ready for delegation.
 
+```mermaid
+flowchart LR
+  single[Stable single-agent runtime] --> ownership[Task ownership]
+  ownership --> isolation[Workspace and state isolation]
+  isolation --> verification[Verification lane]
+  verification --> multi[Bounded multi-agent work]
+```
+
 ## The checklist
 
 Before you add subagents or a coordinator, can your system already do these things?
@@ -58,3 +66,9 @@ Then decide whether you should:
 - stay single-agent longer,
 - add bounded subagents,
 - or build a real coordinator workflow.
+
+## Continue the lab path
+
+- Previous: [Compact Context](/labs/compact-context)
+- Back to overview: [Labs](/labs/)
+- Deep dive pair: [Memory and Multi-Agent](/claude-code/memory-and-multi-agent)

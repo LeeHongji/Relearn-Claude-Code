@@ -6,6 +6,15 @@ This tour explains how Claude Code becomes a usable developer product instead of
 
 `src/commands.ts → src/commands/* → src/components/* → src/ink/* → src/hooks/*`
 
+```mermaid
+flowchart LR
+  registry["src/commands.ts"] --> commands["src/commands/*"]
+  commands --> components["src/components/*"]
+  components --> ink["src/ink/*"]
+  ink --> hooks["src/hooks/*"]
+  hooks --> ux[Developer experience]
+```
+
 ## 1. Command registry
 
 `src/commands.ts` is the user-facing action map.
@@ -14,7 +23,6 @@ It tells you:
 
 - what slash commands exist,
 - which capabilities are productized,
-- which features are optional or gated,
 - how much behavior is intentionally outside the core loop.
 
 ## 2. Command implementations
@@ -78,3 +86,9 @@ After this tour, you should be able to explain:
 - why commands exist alongside the agent loop,
 - where user trust is built in the interface,
 - which UX concerns are really runtime concerns wearing a UI surface.
+
+## Continue the path
+
+- Previous: [Context and Memory Tour](/source-tours/context-memory-tour)
+- Next: return to the [Source tour overview](/source-tours/)
+- Deep dive pair: [Commands, UI, and Extensions](/claude-code/commands-ui-extensions)
