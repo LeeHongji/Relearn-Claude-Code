@@ -25,5 +25,26 @@
       "claude-code",
       "appendix"
     ]
-  }
+  },
+  "focus_areas": [
+    "startup-control-plane",
+    "remote-managed-settings",
+    "settings-change-detection",
+    "app-state-control-surface",
+    "tool-search-and-deferred-capabilities",
+    "structured-output-contracts"
+  ],
+  "rewrite_strategy": {
+    "style": "detailed-topic-articles",
+    "english_first": true,
+    "rewrite_before_translate": true,
+    "priority_waves": [
+      "P0 core spine",
+      "P1 subsystem expansion",
+      "P2 labs and maintainer pages"
+    ]
+  },
+  "analysis_artifacts": [
+    "research/control-plane-state-surfaces-and-page-plan.md"
+  ]
 }
