@@ -59,3 +59,7 @@ features:
 - [设置与远程策略](/zh/claude-code/settings-and-remote-policy)
 - [LSP 与编辑器反馈](/zh/claude-code/lsp-and-editor-feedback)
 - [溢出恢复与响应式压缩](/zh/claude-code/overflow-recovery-and-reactive-compact)
+
+- [设置同步与实时刷新](/zh/claude-code/settings-sync-and-live-refresh)
+- [工具搜索与延迟能力发现](/zh/claude-code/tool-search-and-deferred-capabilities)
+- [会话转录与团队记忆](/zh/claude-code/session-transcripts-and-team-memory)

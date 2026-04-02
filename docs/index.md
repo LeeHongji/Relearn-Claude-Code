@@ -67,3 +67,7 @@ That means the codebase teaches more than “how to call an LLM.” It teaches h
 - [Settings and Remote Policy](/claude-code/settings-and-remote-policy)
 - [Overflow Recovery and Reactive Compact](/claude-code/overflow-recovery-and-reactive-compact)
 - [LSP and Editor Feedback](/claude-code/lsp-and-editor-feedback)
+
+- [Settings Sync and Live Refresh](/claude-code/settings-sync-and-live-refresh)
+- [Tool Search and Deferred Capabilities](/claude-code/tool-search-and-deferred-capabilities)
+- [Session Transcripts and Team Memory](/claude-code/session-transcripts-and-team-memory)
