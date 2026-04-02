@@ -1,122 +1,348 @@
 # Tasks and orchestration
 
-As coding agents grow, “just keep a chat history” stops being enough. You need explicit task structures.
+As soon as a coding agent grows beyond “answer one question and stop,” it needs a way to represent work that outlives a single model reply.
 
-## Relevant source areas
+That is what the task subsystem is for.
+
+This page explains a deeper claim than the previous version:
+
+> **In Claude Code, tasks are not just UI list items. They are durable runtime objects that connect orchestration, persistence, and product visibility.**
+
+## Why this page matters
+
+Without an explicit task model, a coding agent quickly becomes hard to scale:
+
+- background work has nowhere to live,
+- delegated work has no durable identity,
+- UI progress becomes ad-hoc,
+- retries and resumption become brittle,
+- multi-agent or teammate flows start trampling each other.
+
+Claude Code treats tasks as first-class runtime state because the product wants to support:
+
+- background shell work,
+- local and remote agent work,
+- workflow-style execution,
+- teammate-aware collaboration,
+- UI-visible progress and detail dialogs.
+
+## Main source anchors
 
 - `src/tasks.ts`
 - `src/utils/tasks.ts`
 - `src/tasks/types.ts`
-- `src/commands/tasks/*`
+- `src/commands/tasks/tasks.tsx`
 - `src/components/tasks/*`
+- `src/tools/AgentTool/*`
 
-## Why tasks matter
+## The task subsystem in one diagram
 
-Tasks give the runtime a way to represent work that is long-running, backgrounded, delegated, or worth showing separately in the UI.
+```mermaid
+flowchart TD
+  kind[task kind registry in src/tasks.ts] --> durable[durable task state in utils/tasks.ts]
+  durable --> commands[/tasks command + task tools]
+  durable --> ui[components/tasks/*]
+  ui --> product[user-visible background work]
+  durable --> agents[agent / teammate orchestration]
+```
 
-That becomes important for shell execution, remote sessions, multi-agent work, and workflows that outlive a single synchronous turn.
+This is the important shift:
 
-The architectural lesson is:
+the task system is not only “what the UI renders.”
+It is also how the runtime gives long-lived work a durable identity.
 
-> in Claude Code, a “task” is not just a UX list item. It is the contract between runtime orchestration, persistence, and visible product state.
+## Part 1 — `src/tasks.ts` is the task-type registry
 
-## 1. `src/tasks.ts` is the runtime registry
+This file is easy to underestimate because it looks small.
 
-Start with `src/tasks.ts`.
+But architecturally it plays the same role that `tools.ts` plays for tools:
 
-It mirrors the same pattern you see in `tools.ts`:
+- enumerate the kinds of work the runtime recognizes,
+- gate optional task types,
+- provide one registry lookup surface.
 
-- core task types are imported directly,
-- optional task types are feature-gated,
-- `getAllTasks()` is the single registry entrypoint,
-- `getTaskByType()` resolves the concrete handler for execution.
+### Annotated code
 
-That tells you tasks are treated as a **first-class runtime subsystem**, not an afterthought bolted onto the UI.
+```ts
+export function getAllTasks(): Task[] {
+  const tasks: Task[] = [
+    LocalShellTask,
+    LocalAgentTask,
+    RemoteAgentTask,
+    DreamTask,
+  ]
+  if (LocalWorkflowTask) tasks.push(LocalWorkflowTask)
+  if (MonitorMcpTask) tasks.push(MonitorMcpTask)
+  return tasks
+}
 
-The registry also reveals the product boundaries:
+export function getTaskByType(type: TaskType): Task | undefined {
+  return getAllTasks().find(t => t.type === type)
+}
+```
 
-- `LocalShellTask`
-- `LocalAgentTask`
-- `RemoteAgentTask`
-- `DreamTask`
-- optional workflow / monitoring tasks
+### What this means
 
-Each one represents a different kind of long-lived work the product wants to surface coherently.
+The runtime is explicitly saying:
 
-## 2. `src/utils/tasks.ts` is the durable coordination layer
+- there are multiple classes of work,
+- they are not all equal,
+- some are optional,
+- and they should be resolved through a central registry rather than through scattered conditionals.
 
-The deeper orchestration logic lives in `utils/tasks.ts`.
+That is already a strong production sign.
 
-Important signals from the source:
+A toy agent might only have:
 
-- task status is schema-defined (`pending`, `in_progress`, `completed`),
-- task list IDs resolve differently for standalone sessions vs teammates vs team leaders,
-- task files are persisted under a shared tasks directory,
-- lock files and retry/backoff exist to serialize concurrent updates,
-- a high-water-mark file prevents task ID reuse after resets.
+- “shell task”
+- maybe “subagent task”
 
-That is a strong production sign. The task system is designed for:
-
-- multiple agents mutating the same task list,
-- cross-process durability,
-- predictable numbering and claims,
-- same-process subscribers via `tasksUpdated`.
-
-So “tasks” are not merely app-state arrays. They are a **coordination substrate**.
-
-## 3. Task types define product-visible work classes
-
-`src/tasks/types.ts` is small but revealing.
-
-It unions concrete task state types such as:
+Claude Code already anticipates a richer product space:
 
 - local shell work,
 - local agent work,
 - remote agent work,
-- workflow / monitoring work,
-- teammate and dream tasks.
+- dream/background work,
+- workflow or monitoring tasks behind feature gates.
 
-It also distinguishes *all task state* from *background task state*.
+## Part 2 — `utils/tasks.ts` is the durable coordination layer
 
-That matters because the product does not show every running thing the same way:
+If `src/tasks.ts` defines *what kinds of work exist*, `utils/tasks.ts` defines *how task state survives and coordinates across processes*.
 
-- foreground work can stay attached to the active flow,
-- backgrounded work becomes a separate user-visible object,
-- remote and teammate tasks need different detail views and recovery behavior.
+This file is where tasks become more than an array in app state.
 
-## 4. UI/runtime seams are explicit, not accidental
+### Annotated code
 
-The command/UI boundary makes this especially clear.
+```ts
+export const TASK_STATUSES = ['pending', 'in_progress', 'completed'] as const
+```
 
-Examples:
+and:
 
-- `src/commands/tasks/tasks.tsx` turns `/tasks` into a `BackgroundTasksDialog`,
-- `src/components/tasks/BackgroundTaskStatus.tsx` reads `AppState.tasks` and renders footer pills,
-- teammate/task view helpers let the footer switch the user into another agent’s task context.
+```ts
+export const TaskSchema = lazySchema(() =>
+  z.object({
+    id: z.string(),
+    subject: z.string(),
+    description: z.string(),
+    owner: z.string().optional(),
+    status: TaskStatusSchema(),
+    blocks: z.array(z.string()),
+    blockedBy: z.array(z.string()),
+  }),
+)
+```
 
-That means the UI is not polling random runtime globals. It is reading a structured task model and projecting it into:
+### What this means
 
+Claude Code treats tasks as explicit domain objects with:
+
+- identity,
+- ownership,
+- blocking relationships,
+- status,
+- persistence shape.
+
+This is the moment where “task” becomes a runtime concept rather than an interface affordance.
+
+### Another important fragment
+
+```ts
+export function getTaskListId(): string {
+  if (process.env.CLAUDE_CODE_TASK_LIST_ID) {
+    return process.env.CLAUDE_CODE_TASK_LIST_ID
+  }
+  const teammateCtx = getTeammateContext()
+  if (teammateCtx) {
+    return teammateCtx.teamName
+  }
+  return getTeamName() || leaderTeamName || getSessionId()
+}
+```
+
+### Why this matters
+
+This function reveals a lot:
+
+- task lists can be explicitly pinned,
+- teammates may share the leader’s task list,
+- team name can override session identity,
+- standalone sessions still get a fallback task identity.
+
+That means the task subsystem is designed to work in:
+
+- a normal single session,
+- a team context,
+- teammate/coordinator-style flows,
+- explicit externally-managed task lists.
+
+This is not “background task support.”
+It is **durable coordination infrastructure**.
+
+## Part 3 — file-backed durability is part of the architecture
+
+`utils/tasks.ts` also shows file-backed task persistence:
+
+- task directories,
+- sanitized task-list IDs,
+- lock files,
+- high-water-mark files,
+- create/update/reset semantics.
+
+### Annotated code
+
+```ts
+const HIGH_WATER_MARK_FILE = '.highwatermark'
+```
+
+and
+
+```ts
+const LOCK_OPTIONS = {
+  retries: {
+    retries: 30,
+    minTimeout: 5,
+    maxTimeout: 100,
+  },
+}
+```
+
+### What this means
+
+The runtime expects:
+
+- multiple concurrent writers,
+- task resets,
+- the risk of ID reuse bugs,
+- the need to serialize critical sections safely.
+
+That is exactly why tasks belong in architecture discussions.
+
+Without this layer, “task” would collapse into a fragile UI convenience.
+
+## Part 4 — task state is a UI seam, not only a storage detail
+
+Now move upward into the product shell.
+
+### Command surface
+
+`src/commands/tasks/tasks.tsx` is tiny, but revealing:
+
+```ts
+export async function call(onDone, context): Promise<React.ReactNode> {
+  return <BackgroundTasksDialog toolUseContext={context} onDone={onDone} />
+}
+```
+
+### What this means
+
+The `/tasks` command is not doing ad-hoc work itself.
+It delegates to a dedicated product component.
+
+That shows the intended seam:
+
+- runtime produces structured task state,
+- product shell decides how to expose it.
+
+### UI surface
+
+`BackgroundTaskStatus.tsx` makes this even clearer. It reads from app state, computes pill labels, teammate views, selection state, and scrolling windows.
+
+This means tasks are a **user-facing abstraction** with:
+
+- footer summaries,
 - dialogs,
-- footer indicators,
-- detail views,
-- teammate navigation.
+- teammate views,
+- detail panes,
+- keyboard-navigation implications.
 
-This is a classic product seam:
+That is not decoration. It is how the product keeps autonomy observable.
 
-> runtime state is normalized first, then the terminal UI chooses how to reveal it.
+## Part 5 — tasks connect directly to agent orchestration
 
-## 5. What to look for next
+This is the part many readers miss.
 
-If you want to read deeper, follow one task end to end:
+Tasks are not only about shell progress.
+They are also where:
 
-1. registry lookup in `tasks.ts`
-2. persistence / claims / IDs in `utils/tasks.ts`
-3. concrete task implementation like `LocalShellTask` or `RemoteAgentTask`
-4. UI rendering in `components/tasks/*`
-5. command entrypoints in `commands/tasks/*`
+- local agents,
+- remote agents,
+- teammates,
+- background activities
 
-That path shows the real architecture:
+become visible and manageable across the product.
 
-- task definitions describe kinds of work,
-- utilities make them durable and shareable,
-- UI turns them into a product concept the user can actually manage.
+That is why the task system belongs in the same mental neighborhood as:
+
+- `AgentTool`,
+- teammate context,
+- background task dialogs,
+- app-state propagation.
+
+### Architecture lesson
+
+The system is using tasks as the bridge between:
+
+1. **runtime work**
+2. **durable state**
+3. **user-visible orchestration**
+
+This is what makes task state a real architecture seam.
+
+## Part 6 — a better way to teach orchestration
+
+If you only say “Claude Code supports tasks,” you miss the real insight.
+
+The real insight is:
+
+> a task is the smallest durable unit of work the product can track, share, render, and resume.
+
+That makes tasks central to:
+
+- background execution,
+- multi-agent expansion,
+- progress visibility,
+- collaborative or teammate workflows,
+- graceful resumption.
+
+## Part 7 — what to study next
+
+If you want to understand this subsystem deeply, follow one task through five layers:
+
+```mermaid
+flowchart LR
+  registry[src/tasks.ts] --> storage[utils/tasks.ts]
+  storage --> type[concrete task implementation]
+  type --> ui[components/tasks/*]
+  ui --> command[commands/tasks/*]
+```
+
+Recommended reading order:
+
+1. `src/tasks.ts`
+2. `src/utils/tasks.ts`
+3. one concrete task type such as `LocalShellTask` or `LocalAgentTask`
+4. `src/components/tasks/*`
+5. `src/commands/tasks/tasks.tsx`
+
+That path will teach you more than reading the UI in isolation.
+
+## Teaching takeaway
+
+### For beginners
+
+Tasks answer the question:
+
+> how does an agent keep track of work that lasts longer than one response?
+
+### For advanced readers
+
+The strongest lesson is that Claude Code uses task state as a **durable product boundary**:
+
+- registry-defined,
+- file-backed,
+- lock-aware,
+- app-state visible,
+- UI-projected.
+
+That is why the task subsystem belongs in the architecture spine, not as a side note.
