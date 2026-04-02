@@ -35,6 +35,22 @@ A terminal agent still needs serious UX work:
 - structured diffs,
 - progress and error presentation.
 
+The most useful architectural question is not “where is the UI?” but:
+
+> where does runtime state become a visible developer experience?
+
+One clear seam is the task system:
+
+- command entrypoints like `/tasks` open task dialogs,
+- `components/tasks/*` renders background-task state, detail panes, and teammate views,
+- runtime task state is projected into footer pills, dialogs, and navigation instead of being left as hidden infrastructure.
+
+That is a good example of Claude Code’s general product style:
+
+- runtime subsystems own the truth,
+- commands expose them,
+- terminal UI makes them legible.
+
 ## Extensions
 
 Claude Code exposes multiple ways to extend the system:
@@ -52,6 +68,13 @@ Claude Code exposes multiple ways to extend the system:
 A mature product cannot put every feature inside the main loop. It needs **extension boundaries**.
 
 Those boundaries help the team add capabilities without rewriting `query.ts` every week.
+
+They also create clean product seams:
+
+- commands are the user-facing verbs,
+- UI components are the presentation layer,
+- plugins/skills/MCP widen capability,
+- the runtime decides what stays core vs what is loaded on demand.
 
 ## Engineering lesson
 
